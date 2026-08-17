@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Dia Bookmarks",
+  "version": "0.1.0",
+  "description": "Bookmarks sidebar for Dia: search, drag & drop, peek windows — and jump to already-open tabs instead of opening duplicates.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["bookmarks", "tabs", "storage", "sidePanel", "favicon"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content-peekbar.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/sidepanel/sidepanel.html"],
+      "matches": ["http://localhost/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/sidepanel.html"
+  },
+  "action": {
+    "default_title": "Dia Bookmarks",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  }
+}

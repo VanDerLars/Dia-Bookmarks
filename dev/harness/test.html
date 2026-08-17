@@ -1,0 +1,81 @@
+<!doctype html>
+<!-- Dev-Harness: lädt das echte Panel-CSS/-JS mit gemockten chrome.*-APIs,
+     damit die UI ohne Extension-Kontext im Browser testbar ist.
+     Markup unten = Kopie des <body> von src/sidepanel/sidepanel.html — bei
+     Änderungen dort hier nachziehen.
+     Start: python3 -m http.server 8123 (im Repo-Root)
+     → http://localhost:8123/dev/harness/test.html -->
+<html>
+<head>
+<meta charset="utf-8">
+<title>DiaSideBar (harness)</title>
+<link rel="stylesheet" href="../../src/sidepanel/sidepanel.css">
+</head>
+<body>
+
+<header id="topbar">
+  <span id="count">Bookmarks: 0</span>
+  <span class="spacer"></span>
+  <button id="btn-add" class="iconbtn" title="Add bookmark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
+  </button>
+  <button id="btn-newfolder" class="iconbtn" title="New folder">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+  </button>
+</header>
+
+<div id="searchbar">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+  <input id="search" type="text" placeholder="Search bookmarks" autocomplete="off" spellcheck="false">
+  <button id="search-clear" class="iconbtn hidden" title="Clear search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </button>
+</div>
+
+<main id="scroll">
+  <section id="open-section" class="hidden">
+    <div id="open-header" class="section-header">
+      <svg class="chevron-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+      <span>Open bookmarks</span>
+      <span id="open-count" class="badge"></span>
+    </div>
+    <div id="open-list"></div>
+  </section>
+  <div id="tree"></div>
+  <div id="empty-state" class="hidden">No bookmarks found</div>
+</main>
+
+<dialog id="dlg">
+  <form id="dlg-form">
+    <h2 id="dlg-title">Add bookmark</h2>
+    <label>Title
+      <input id="dlg-name" type="text" autocomplete="off">
+    </label>
+    <label>URL
+      <input id="dlg-url" type="text" autocomplete="off" spellcheck="false" placeholder="https://…">
+    </label>
+    <label id="dlg-folder-row">Folder
+      <select id="dlg-folder"></select>
+    </label>
+    <div class="dlg-buttons">
+      <button type="button" id="dlg-cancel" class="btn">Cancel</button>
+      <button type="submit" id="dlg-save" class="btn primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm-dlg">
+  <h2 id="confirm-title">Delete folder</h2>
+  <p id="confirm-msg"></p>
+  <div class="dlg-buttons">
+    <button type="button" id="confirm-cancel" class="btn">Cancel</button>
+    <button type="button" id="confirm-ok" class="btn danger">Delete</button>
+  </div>
+</dialog>
+
+<div id="menu" class="hidden"></div>
+
+<script src="chrome-mock.js"></script>
+<script src="../../src/sidepanel/sidepanel.js"></script>
+</body>
+</html>

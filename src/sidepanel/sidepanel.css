@@ -1,0 +1,406 @@
+/* DiaSideBar — Side-Panel-Styles. Dark-first (wie Dia), Light via media query. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  color-scheme: dark;
+  --bg: #1d1d20;
+  --panel: #29292e;
+  --fg: #e8e8ea;
+  --muted: #9a9aa3;
+  --hover: #2f2f35;
+  --border: #3c3c43;
+  --accent: #6e8cfb;
+  --danger: #e5534b;
+  --badge-bg: #333339;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --panel: #f6f6f9;
+    --fg: #1b1b1f;
+    --muted: #6f6f78;
+    --hover: #ededf2;
+    --border: #dfdfe6;
+    --accent: #4f68f7;
+    --danger: #d64540;
+    --badge-bg: #ebebf0;
+  }
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  overflow: hidden;
+}
+
+.hidden { display: none !important; }
+.spacer { flex: 1; }
+
+/* ---- Kopfzeile ---- */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 10px 4px;
+  flex: none;
+}
+#count { font-weight: 600; color: var(--muted); font-size: 12px; }
+
+.iconbtn {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  cursor: pointer;
+  flex: none;
+}
+.iconbtn:hover { background: var(--hover); color: var(--fg); }
+.iconbtn svg { width: 16px; height: 16px; }
+
+/* ---- Suche ---- */
+#searchbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 4px 10px 8px;
+  flex: none;
+}
+#searchbar .search-icon {
+  position: absolute;
+  left: 20px;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  pointer-events: none;
+}
+#search {
+  flex: 1;
+  height: 28px;
+  padding: 0 30px 0 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--fg);
+  outline: none;
+  font-size: 12.5px;
+}
+#search::placeholder { color: var(--muted); }
+#search:focus { border-color: var(--accent); }
+#search-clear {
+  position: absolute;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+}
+#search-clear svg { width: 12px; height: 12px; }
+
+/* ---- Liste ---- */
+#scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: 14px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+.section-header .chevron-s {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.12s;
+  flex: none;
+}
+#open-section.expanded .chevron-s { transform: rotate(90deg); }
+#open-section { border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 4px; }
+
+/* Root-Folder (Bookmarks Bar, Other Bookmarks) als feste Hauptsektionen:
+   nicht toggelbar, immer aufgeklappt; Klick setzt nur das Ziel für Neues. */
+.root-section {
+  position: relative;
+  cursor: default;
+  gap: 6px;
+  /* Feste Höhe: beim Hover ersetzt der 22px-Button das 16px-Badge — ohne
+     fixe Höhe sprang die Headerhöhe und die Liste "wackelte". */
+  height: 40px;
+  padding: 12px 6px 2px;
+  border-radius: 6px;
+  margin: 0 6px;
+}
+.root-section:hover { color: var(--fg); }
+.root-section .label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.root-section .actions { display: none; flex: none; }
+.root-section:hover .actions { display: flex; }
+.root-section:hover .badge { display: none; }
+.root-section .actions .iconbtn { width: 22px; height: 22px; }
+.root-section .actions .iconbtn svg { width: 14px; height: 14px; }
+
+/* ---- Rows (Bookmark + Folder) ---- */
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  /* Einzug pro Ebene = Chevron (16px) + Gap (7px), damit Kind-Favicons exakt
+     auf der Ordner-Icon-Spalte des Parents liegen. */
+  padding: 0 6px 0 calc(8px + var(--depth, 0) * 23px);
+  margin: 1px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--fg);
+  text-decoration: none;
+}
+.row:hover { background: var(--hover); }
+.row .label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.row.folder .label { font-weight: 500; }
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 0.12s;
+  flex: none;
+}
+.chevron svg { width: 12px; height: 12px; }
+.row.expanded .chevron { transform: rotate(90deg); }
+
+.foldericon { color: var(--muted); flex: none; display: flex; }
+.foldericon svg { width: 16px; height: 16px; }
+
+.favicon { width: 16px; height: 16px; border-radius: 3px; flex: none; }
+.favicon.letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.badge {
+  min-width: 18px;
+  padding: 1px 6px;
+  border-radius: 9px;
+  background: var(--badge-bg);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-align: center;
+  flex: none;
+}
+
+/* Hover-Aktionen ersetzen das Badge */
+.actions { display: none; flex: none; }
+.row:hover .actions { display: flex; }
+.row:hover .badge { display: none; }
+.actions .iconbtn { width: 22px; height: 22px; }
+.actions .iconbtn svg { width: 14px; height: 14px; }
+
+/* Killerfeature: bereits offene Lesezeichen — dezente Hintergrund-Tönung
+   (bewusst OHNE Umrandung, User-Feedback). */
+.row.open {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.row.open:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+
+/* Der gerade AKTIVE Tab in der "Open bookmarks"-Sektion: kräftigere Tönung
+   + schmale Akzentkante links. */
+.row.open.active-tab {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  box-shadow: inset 2px 0 0 0 var(--accent);
+}
+.row.open.active-tab:hover {
+  background: color-mix(in srgb, var(--accent) 36%, transparent);
+}
+.row.open.active-tab .label { font-weight: 500; }
+
+/* Neu geöffnet: superkurz & subtil. Baum-Row pulst nur (sie stand schon da),
+   Open-Sektion-Row gleitet zusätzlich ein. Nur für NEU offene Rows gesetzt. */
+@keyframes open-pulse {
+  0% { background-color: color-mix(in srgb, var(--accent) 34%, transparent); }
+  100% { background-color: color-mix(in srgb, var(--accent) 14%, transparent); }
+}
+@keyframes open-slide-in {
+  0% { opacity: 0; transform: translateY(-3px); }
+  100% { opacity: 1; transform: none; }
+}
+.row.just-open { animation: open-pulse 260ms ease-out; }
+.row.just-open-in { animation: open-slide-in 140ms ease-out, open-pulse 260ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .row.just-open,
+  .row.just-open-in { animation: none; }
+}
+
+/* ---- Drag & Drop ---- */
+.row.dragging { opacity: 0.45; }
+/* Einfügelinie als Pseudo-Element — gerade Kanten, unabhängig vom
+   border-radius der Row (inset-box-shadow folgte sonst der Rundung). */
+.drop-before::after,
+.drop-after::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  pointer-events: none;
+}
+.drop-before::after { top: -1.5px; }
+.drop-after::after { bottom: -1.5px; }
+.drop-into {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.empty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 12px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  padding-left: calc(8px + var(--depth, 0) * 23px + 23px);
+  margin: 0 6px;
+}
+
+#empty-state { text-align: center; color: var(--muted); padding: 28px 0; }
+
+/* ---- Inline-Rename ---- */
+.rename {
+  flex: 1;
+  min-width: 0;
+  height: 22px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0 6px;
+  font-size: 12.5px;
+  outline: none;
+}
+
+/* ---- Kontextmenü ---- */
+#menu {
+  position: fixed;
+  z-index: 50;
+  min-width: 190px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 6px 9px;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-size: 12.5px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+.menu-item:hover { background: var(--hover); }
+.menu-item svg { width: 15px; height: 15px; color: var(--muted); flex: none; }
+.menu-item.danger { color: var(--danger); }
+.menu-item.danger svg { color: var(--danger); }
+.menu-sep { height: 1px; background: var(--border); margin: 5px 8px; }
+
+/* ---- Dialoge ---- */
+dialog {
+  margin: auto; /* der *-Reset killt sonst das native Zentrieren */
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--fg);
+  padding: 16px;
+  width: calc(100vw - 40px);
+  max-width: 340px;
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+dialog h2 { font-size: 13.5px; margin-bottom: 12px; }
+dialog p { font-size: 12.5px; color: var(--muted); }
+dialog label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+dialog input[type="text"],
+dialog select {
+  width: 100%;
+  margin-top: 4px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0 8px;
+  font-size: 12.5px;
+  outline: none;
+  font-weight: 400;
+}
+dialog input[type="text"]:focus,
+dialog select:focus { border-color: var(--accent); }
+
+.dlg-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+.btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.btn:hover { background: var(--hover); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.1); }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.danger:hover { filter: brightness(1.1); }
